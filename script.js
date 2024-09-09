@@ -74,3 +74,30 @@ function downloadCSV() {
     document.body.removeChild(link); // Remove o link após o download
 }
 
+// Função para baixar a tabela como PDF
+function downloadPDF() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.text("Resultados da Tabela", 14, 16);
+
+    const rows = [];
+    const xValues = [...document.querySelectorAll("#result-body td:nth-child(1)")];
+    const yValues = [...document.querySelectorAll("#result-body td:nth-child(2)")];
+
+    xValues.forEach((xElement, index) => {
+        const x = xElement.textContent;
+        const y = yValues[index].textContent;
+        rows.push([x, y]);
+    });
+
+    // Gera a tabela no PDF
+    doc.autoTable({
+        head: [['x', 'y']],
+        body: rows,
+        startY: 20
+    });
+
+    doc.save("resultados.pdf");
+}
+
