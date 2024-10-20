@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelos Linear e Quadrático</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            color: #333;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+
+        input, select, button {
+            margin-top: 5px;
+            padding: 8px;
+            font-size: 1em;
+        }
+
+        table {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        table, th, td {
+            border: 1px solid #ccc;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        #result-container {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Calculadora de Modelos</h1>
+
+    <label for="start">Valor inicial de x:</label>
+    <input type="number" id="start" step="any">
+
+    <label for="end">Valor final de x:</label>
+    <input type="number" id="end" step="any">
+
+    <label for="step">Intervalo entre valores de x:</label>
+    <input type="number" id="step" step="any">
+
+    <label for="model">Escolha o modelo:</label>
+    <select id="model">
+        <option value="linear">Modelo Linear (y = ax + b)</option>
+        <option value="quadratic">Modelo Quadrático (y = ax² + bx + c)</option>
+    </select>
+
+    <div id="linear-inputs">
+        <label for="a-linear">Coeficiente a (inclinação):</label>
+        <input type="number" id="a-linear" step="any">
+        
+        <label for="b-linear">Coeficiente b (constante):</label>
+        <input type="number" id="b-linear" step="any">
+    </div>
+
+    <div id="quadratic-inputs" class="hidden">
+        <label for="a-quadratic">Coeficiente a (termo quadrático):</label>
+        <input type="number" id="a-quadratic" step="any">
+
+        <label for="b-quadratic">Coeficiente b (termo linear):</label>
+        <input type="number" id="b-quadratic" step="any">
+
+        <label for="c-quadratic">Coeficiente c (constante):</label>
+        <input type="number" id="c-quadratic" step="any">
+    </div>
+
+    <button onclick="calculate()">Calcular</button>
+
+    <div id="result-container" class="hidden">
+        <h2>Resultados</h2>
+        <table id="result-table">
+            <thead>
+                <tr>
+                    <th>x</th>
+                    <th>y</th>
+                </tr>
+            </thead>
+            <tbody id="result-body">
+            </tbody>
+        </table>
+
+        <button onclick="downloadCSV()">Baixar CSV</button>
+        <button onclick="downloadPDF()">Baixar PDF</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.14/jspdf.plugin.autotable.min.js"></script>
+
+</body>
+</html>
+
