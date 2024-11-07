@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Irrigação para Pimenta</title>
+    <style>
+        /* Estilos para melhorar a visualização em dispositivos móveis */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: #ffffff;
+            padding: 20px;
+            width: 90%;
+            max-width: 400px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            font-size: 1.5em;
+            text-align: center;
+        }
+        label {
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        select, input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .resultado {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Calculadora de Irrigação para Pimenta</h1>
+        
+        <label for="temperature">Temperatura (°C):</label>
+        <select id="temperature">
+            <option value="14">14</option>
+            <option value="16">16</option>
+            <option value="18">18</option>
+            <option value="20">20</option>
+            <option value="22">22</option>
+            <option value="24">24</option>
+            <option value="26">26</option>
+            <option value="28">28</option>
+            <option value="30">30</option>
+            <option value="32">32</option>
+            <option value="34">34</option>
+        </select>
+        
+        <label for="humidity">Umidade Relativa (%):</label>
+        <select id="humidity">
+            <option value="40">40%</option>
+            <option value="45">45%</option>
+            <option value="50">50%</option>
+            <option value="55">55%</option>
+            <option value="60">60%</option>
+            <option value="65">65%</option>
+            <option value="70">70%</option>
+            <option value="75">75%</option>
+            <option value="80">80%</option>
+            <option value="85">85%</option>
+            <option value="90">90%</option>
+        </select>
+        
+        <label for="growth_stage">Estádio de Crescimento:</label>
+        <select id="growth_stage">
+            <option value="Inicial">Inicial</option>
+            <option value="Vegetativo">Vegetativo</option>
+            <option value="Frutificação">Frutificação</option>
+            <option value="Maturação">Maturação</option>
+        </select>
+
+        <label for="plant_area">Área Ocupada por Planta (m²):</label>
+        <input type="number" id="plant_area" placeholder="Exemplo: 0.5" step="0.01" min="0">
+        
+        <label for="unit">Unidade de Medida:</label>
+        <select id="unit">
+            <option value="litros">Litros/planta</option>
+            <option value="mm">mm/planta</option>
+        </select>
+        
+        <button onclick="calcularIrrigacao()">Calcular</button>
+        
+        <div class="resultado">
+            <h2>Resultado: <span id="resultado"></span></h2>
+        </div>
+    </div>
+    
+    <script>
+        // Dados simulados da planilha ETo e Kc para simplificação do exemplo
+        const etoData = {
+            14: {40: 5.5, 45: 5.0, 50: 4.6, 55: 4.3, 60: 3.6, 65: 2.7, 70: 2.3, 75: 2.0, 80: 1.8, 85: 1.4, 90: 0.9},
+            16: {40: 5.9, 45: 5.5, 50: 5.0, 55: 4.4, 60: 3.9, 65: 3.2, 70: 2.8, 75: 2.4, 80: 2.1, 85: 1.7, 90: 1.2},
+            18: {40: 6.7, 45: 6.1, 50: 5.5, 55: 5.0, 60: 4.3, 65: 3.7, 70: 3.1, 75: 2.7, 80: 2.4, 85: 2.0, 90: 1.4},
+            20: {40: 7.5, 45: 7.1, 50: 6.5, 55: 6.1, 60: 5.1, 65: 4.3, 70: 3.7, 75: 3.2, 80: 2.8, 85: 2.3, 90: 1.7},
+            22: {40: 8.4, 45: 7.9, 50: 7.3, 55: 6.7, 60: 5.8, 65: 5.0, 70: 4.3, 75: 3.6, 80: 3.2, 85: 2.7, 90: 2.0},
+            24: {40: 9.0, 45: 8.5, 50: 7.8, 55: 7.3, 60: 6.2, 65: 5.4, 70: 4.7, 75: 4.1, 80: 3.6, 85: 3.1, 90: 2.4},
+            26: {40: 9.5, 45: 9.0, 50: 8.5, 55: 8.0, 60: 7.1, 65: 6.3, 70: 5.5, 75: 4.8, 80: 4.3, 85: 3.7, 90: 3.1},
+            28: {40: 10.0, 45: 9.6, 50: 9.0, 55: 8.5, 60: 7.6, 65: 6.8, 70: 6.0, 75: 5.4, 80: 4.7, 85: 4.2, 90: 3.5},
+            30: {40: 10.5, 45: 10.0, 50: 9.5, 55: 9.0, 60: 8.2, 65: 7.4, 70: 6.5, 75: 5.9, 80: 5.3, 85: 4.6, 90: 3.9},
+            32: {40: 11.0, 45: 10.5, 50: 10.0, 55: 9.5, 60: 8.6, 65: 7.9, 70: 7.1, 75: 6.4, 80: 5.9, 85: 5.1, 90: 4.3},
+            34: {40: 11.5, 45: 11.0, 50: 10.5, 55: 10.0, 60: 9.0, 65: 8.3, 70: 7.5, 75: 6.9, 80: 6.3, 85: 5.6, 90: 4.8}
+        };
+
+        const kcData = {
+            "Inicial": 0.65,
+            "Vegetativo": 0.50,
+            "Frutificação": 1.00,
+            "Maturação": 0.80
+        };
+
+        function calcularIrrigacao() {
+            const temperatura = parseInt(document.getElementById("temperature").value);
+            const umidade = parseInt(document.getElementById("humidity").value);
+            const estadio = document.getElementById("growth_stage").value;
+            const area = parseFloat(document.getElementById("plant_area").value);
+            const unidade = document.getElementById("unit").value;
+            
+            if (isNaN(area) || area <= 0) {
+                document.getElementById("resultado").innerText = "Por favor, insira uma área válida.";
+                return;
+            }
+            
+            const eto = etoData[temperatura][umidade];
+            const kc = kcData[estadio];
+            
+            if (eto && kc) {
+                let irrigacao = eto * kc;
+                
+                if (unidade === "litros") {
+                    irrigacao *= area;  // Conversão para litros (considerando a área)
+                    document.getElementById("resultado").innerText = irrigacao.toFixed(2) + " L/planta";
+                } else {
+                    document.getElementById("resultado").innerText = irrigacao.toFixed(2) + " mm/planta";
+                }
+            } else {
+                document.getElementById("resultado").innerText = "Erro nos dados selecionados.";
+            }
+        }
+    </script>
+</body>
+</html>
